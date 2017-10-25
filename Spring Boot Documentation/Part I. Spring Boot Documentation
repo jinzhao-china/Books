@@ -1,7 +1,6 @@
 # 第一章. Spring Boot文档
 
-本节做为阅读指南，主要介绍了Spring Boot的大致内容，您可以先阅读该参考指南，如果您不感兴趣的话也可以跳过该部分。
-
+本节提供一个Spring Boot参考文档的简明概述。你可以把它作为文档其余部分的导航。你可以从头到尾依次阅读该参考指南，或跳过你不感兴趣的章节。
 1. 关于本文档
 
 Spring Boot参考指南可以以 html，pdf 和 epub 文档的形式获取。 
@@ -33,6 +32,7 @@ Spring Boot 所有的东西都是开源的，包括文档！ 如果您发现文�
 运行代码：IDE | Packaged | Maven | Gradle
 打包应用程序： Production jars
 Spring Boot CLI：使用CLI
+
 5. 了解Spring Boot功能
 
 需要有关Spring Boots核心功能的更多细节？请看这里
@@ -43,10 +43,18 @@ Web 应用: MVC | Embedded Containers
 消息处理: Overview | JMS
 测试: Overview | Boot Applications | Utils
 扩展: Auto-configuration | @Conditions
+
 6. 转移到生产环境
 
-当您准备好将Spring Boot 应用程序放到生产环境时，我们有一些您可能会喜欢的技巧！
+当你准备将你的Spring Boot应用推送到生产环境时，我们为你准备了一些你可能喜欢的技巧！
 
-部署 Spring Boot 应用程序: Cloud Deployment | OS Service 
-构建工具插件：Maven | Gradle 
-附录: Application Properties | 自动配置类 | 可执行 Jars
+管理端点：概述｜自定义
+连接可选项：HTTP｜JMX｜SSH
+监控：指标｜审计｜追踪｜进程
+高级主题
+
+最后，我们为高级用户准备了一些主题。
+
+云部署：Cloud Foundry｜Heroku｜CloudBees
+构建工具插件：Maven｜Gradle
+附录：应用属性｜Auto-configuration类｜可执行Jars
