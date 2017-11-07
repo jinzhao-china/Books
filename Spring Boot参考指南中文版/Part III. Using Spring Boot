@@ -106,106 +106,118 @@ If you don’t want to use the spring-boot-starter-parent, you can still keep th
     </dependencyManagement>
 [Note]
 In the example above, we specify a BOM but any dependency type can be overridden that way.
+在上面的例子中，我们指定了一个BOM，但是对于依赖，我们可以用这种方式重写。
 13.2.3 Changing the Java version
+修改Java版本
 
 The spring-boot-starter-parent chooses fairly conservative Java compatibility. If you want to follow our recommendation and use a later Java version you can add a java.version property:
-
-<properties>
-    <java.version>1.8</java.version>
-</properties>
+spring-boot-starter-parent考虑到兼容性， 选择较为保守的java版本。如果你想使用最新的java版本，可以添加一个java.version属性：
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
 13.2.4 Using the Spring Boot Maven plugin
-
+使用Spring Boot的Maven插件
 Spring Boot includes a Maven plugin that can package the project as an executable jar. Add the plugin to your <plugins> section if you want to use it:
+Spring Boot可以包含Maven插件，用这个插件就可以将项目打包成一个可以单独执行的jar文件，如果你想使用这个功能，只要将插件声明，放到<plugins>块中
 
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 [Note]
 If you use the Spring Boot starter parent pom, you only need to add the plugin, there is no need for to configure it unless you want to change the settings defined in the parent.
+如果您使用的是Spring Boot的父POM，那么只需添加插件，而不需要对它进行额外的配置，除非您要更改父类中定义的设置。
+
 13.3 Gradle
 Gradle users can directly import ‘starters’ in their dependencies section. Unlike Maven, there is no “super parent” to import to share some configuration.
+Gradle用户可以直接在dependencies中导入‘starters’，跟Maven不一样，没有“super parent”已经包含了一些共用的设置。
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        compile("org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE")
+    }
+The spring-boot-gradle-plugin is also available and provides tasks to create executable jars and run projects from source. 
+It also provides dependency management that, among other capabilities, allows you to omit the version number for any dependencies that are managed by Spring Boot:
+spring-boot-gradle-plugin 也可以引用插件，来生成可执行的jar文件。
+Gradel也提供依赖管理功能，对于Spring boot内置支持的依赖，允许你不提供版本号.
 
-repositories {
-    jcenter()
-}
-
-dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE")
-}
-The spring-boot-gradle-plugin is also available and provides tasks to create executable jars and run projects from source. It also provides dependency management that, among other capabilities, allows you to omit the version number for any dependencies that are managed by Spring Boot:
-
-plugins {
-    id 'org.springframework.boot' version '1.5.2.RELEASE'
-    id 'java'
-}
+    plugins {
+        id 'org.springframework.boot' version '1.5.2.RELEASE'
+        id 'java'
+    }
 
 
-repositories {
-    jcenter()
-}
-
-dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-}
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        compile("org.springframework.boot:spring-boot-starter-web")
+        testCompile("org.springframework.boot:spring-boot-starter-test")
+    }
 13.4 Ant
 It is possible to build a Spring Boot project using Apache Ant+Ivy. The spring-boot-antlib “AntLib” module is also available to help Ant create executable jars.
+用Apache Ant+Ivy， 我们也可以来构建Spring Boot 项目， spring-boot-antlib 有个“AntLib” 模块，可以帮助创建可执行的jar文件.
 
 To declare dependencies a typical ivy.xml file will look something like this:
-
-<ivy-module version="2.0">
-    <info organisation="org.springframework.boot" module="spring-boot-sample-ant" />
-    <configurations>
-        <conf name="compile" description="everything needed to compile this module" />
-        <conf name="runtime" extends="compile" description="everything needed to run this module" />
-    </configurations>
-    <dependencies>
-        <dependency org="org.springframework.boot" name="spring-boot-starter"
-            rev="${spring-boot.version}" conf="compile" />
-    </dependencies>
-</ivy-module>
+比如像下面，就是一个典型的ivy.xml，其中包含了依赖：
+    <ivy-module version="2.0">
+        <info organisation="org.springframework.boot" module="spring-boot-sample-ant" />
+        <configurations>
+            <conf name="compile" description="everything needed to compile this module" />
+            <conf name="runtime" extends="compile" description="everything needed to run this module" />
+        </configurations>
+        <dependencies>
+            <dependency org="org.springframework.boot" name="spring-boot-starter"
+                rev="${spring-boot.version}" conf="compile" />
+        </dependencies>
+    </ivy-module>
+    
 A typical build.xml will look like this:
+build.xml可以参考下面：
 
-<project
-    xmlns:ivy="antlib:org.apache.ivy.ant"
-    xmlns:spring-boot="antlib:org.springframework.boot.ant"
-    name="myapp" default="build">
-
-    <property name="spring-boot.version" value="1.3.0.BUILD-SNAPSHOT" />
-
-    <target name="resolve" description="--> retrieve dependencies with ivy">
-        <ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" />
-    </target>
-
-    <target name="classpaths" depends="resolve">
-        <path id="compile.classpath">
-            <fileset dir="lib/compile" includes="*.jar" />
-        </path>
-    </target>
-
-    <target name="init" depends="classpaths">
-        <mkdir dir="build/classes" />
-    </target>
-
-    <target name="compile" depends="init" description="compile">
-        <javac srcdir="src/main/java" destdir="build/classes" classpathref="compile.classpath" />
-    </target>
-
-    <target name="build" depends="compile">
-        <spring-boot:exejar destfile="build/myapp.jar" classes="build/classes">
-            <spring-boot:lib>
-                <fileset dir="lib/runtime" />
-            </spring-boot:lib>
-        </spring-boot:exejar>
-    </target>
-</project>
+    <project
+        xmlns:ivy="antlib:org.apache.ivy.ant"
+        xmlns:spring-boot="antlib:org.springframework.boot.ant"
+        name="myapp" default="build">
+    
+        <property name="spring-boot.version" value="1.3.0.BUILD-SNAPSHOT" />
+    
+        <target name="resolve" description="--> retrieve dependencies with ivy">
+            <ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" />
+        </target>
+    
+        <target name="classpaths" depends="resolve">
+            <path id="compile.classpath">
+                <fileset dir="lib/compile" includes="*.jar" />
+            </path>
+        </target>
+    
+        <target name="init" depends="classpaths">
+            <mkdir dir="build/classes" />
+        </target>
+    
+        <target name="compile" depends="init" description="compile">
+            <javac srcdir="src/main/java" destdir="build/classes" classpathref="compile.classpath" />
+        </target>
+    
+        <target name="build" depends="compile">
+            <spring-boot:exejar destfile="build/myapp.jar" classes="build/classes">
+                <spring-boot:lib>
+                    <fileset dir="lib/runtime" />
+                </spring-boot:lib>
+            </spring-boot:exejar>
+        </target>
+    </project>
 [Tip]
 See the Section 84.10, “Build an executable archive from Ant without using spring-boot-antlib” “How-to” if you don’t want to use the spring-boot-antlib module.
+
 13.5 Starters
 Starters are a set of convenient dependency descriptors that you can include in your application. You get a one-stop-shop for all the Spring and related technology that you need, without having to hunt through sample code and copy paste loads of dependency descriptors. For example, if you want to get started using Spring and JPA for database access, just include the spring-boot-starter-data-jpa dependency in your project, and you are good to go.
 
